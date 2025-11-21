@@ -1,31 +1,36 @@
 { config, pkgs, lib, ... }:
 
 {
-  # SDDM display manager with VM optimizations
+  imports = [
+    ../packages
+  ];
+
+  #### Display manager / session ####
+
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
     autoNumlock = true;
   };
-  
-  # Sway as default session
-  services.displayManager.defaultSession = "sway";
-  
-  
-  # Mouse cursor theme
-  environment.variables = {
-    XCURSOR_THEME = "Adwaita";
-    XCURSOR_SIZE = "24";
-  };
 
-  # Sway window manager (configured via home-manager)
+  # SwayFX as default session
+  services.displayManager.defaultSession = "sway";
+
   programs.sway = {
     enable = true;
     package = pkgs.swayfx;
     wrapperFeatures.gtk = true;
   };
 
-  # Minimal application set
+  #### Cursors / environment ####
+
+  environment.variables = {
+    XCURSOR_THEME = "Adwaita";
+    XCURSOR_SIZE  = "24";
+  };
+
+  #### VM-focused package set (minimal) ####
+
   environment.systemPackages = with pkgs; [
     ghostty
     firefox
@@ -37,18 +42,21 @@
     gnome-themes-extra
   ];
 
-  # Basic fonts
+  #### Fonts (simple, consistent) ####
+
   fonts = {
     packages = with pkgs; [
       noto-fonts
       hack-font
     ];
+
     fontconfig.defaultFonts = {
       monospace = [ "Hack" ];
     };
   };
 
-  # Desktop integration
+  #### Portals for Wayland apps ####
+
   xdg.portal = {
     enable = true;
     wlr.enable = true;

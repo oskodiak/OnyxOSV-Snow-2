@@ -28,16 +28,16 @@
     XCURSOR_SIZE  = "24";
   };
 
-  #### Desktop applications ####
+  #### Laptop desktop applications ####
 
   environment.systemPackages = with pkgs; [
     ghostty
-    kitty
     firefox
     brightnessctl
     networkmanagerapplet
+    powertop
+    acpi
 
-    # Themes / icons
     adwaita-icon-theme
     gnome-themes-extra
   ];
@@ -73,13 +73,19 @@
     ];
   };
 
-  #### Printing / network discovery ####
+  #### Laptop-specific services ####
 
-  services.printing.enable = true;
+  # Modern power-profiles daemon (preferred on many laptops)
+  services.power-profiles-daemon.enable = true;
 
-  services.avahi = {
-    enable       = true;
-    nssmdns4     = true;
-    openFirewall = true;
-  };
+  # Optional: TLP if you want aggressive tuning (can conflict with power-profiles-daemon,
+  # so normally you pick one or the other. Leave commented if you prefer PPD.)
+  # services.tlp.enable = true;
+
+  # Touchpad / input tuning (Wayland compositors use libinput directly,
+  # but these options still apply at system level for some apps)
+  services.libinput.enable = true;
+
+  # Suspend / lid behaviour can be tuned here if you want:
+  # services.logind.lidSwitch = "suspend";
 }
