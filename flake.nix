@@ -1,5 +1,5 @@
 {
-  description = "OnyxOSV-Snow v2 - NixOS distribution for workstation / VM / laptop";
+  description = "OnyxOSV-Snow v2 - NixOS distribution for workstation / laptop";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -19,25 +19,20 @@
       inherit nixpkgs home-manager;
       rootPath = ./.;
     };
+
+    inherit (hostHelpers) mkHost;
   in {
-    nixosConfigurations = with hostHelpers; {
-      # Sample dev hosts (can be removed once the installer is fully wired)
-
-      workstation = mkHost {
+    nixosConfigurations = {
+      # Dev VM: Belial / workstation profile, VM hardware
+      oskodiak = mkHost {
         inherit system;
-        hostname       = "workstation";
-        hardwareModule = "amd";
-        profile        = "workstation";
-        # userModules   = [ ./users/your-user.nix ];
+        hostname       = "belial-vm";   # or "belial", your call
+        profile        = "workstation"; # uses profiles/workstation.nix
+        hardwareModule = "vm";          # uses hardware/vm.nix
+        userModules    = [ ./users/oskodiak.nix ];
       };
 
-      vm = mkHost {
-        inherit system;
-        hostname       = "vm";
-        hardwareModule = "vm";
-        profile        = "vm";
-        # userModules   = [ ./users/your-user.nix ];
-      };
+      # (You can keep/remove other sample hosts later)
     };
   };
 }

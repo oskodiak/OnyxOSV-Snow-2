@@ -1,49 +1,37 @@
-{ lib }:
+{ lib, nixpkgs, home-manager, rootPath ? ./. }:
 
 let
-  canonicalize = value:
-    if builtins.isString value then value else
-      throw "mkHost: Expected a string, got: ${builtins.typeOf value}";
-in
+  mkHost =
+    { system ? "x86_64-linux"
+    , hostname
+    , profile
+    , hardwareModule
+    , userModules ? [ ]
+    , extraModules ? [ ]
+    }:
+    nixpkgs.lib.nixosSystem {
+      inherit system;
 
-{ config, pkgs, ... }:
+      modules =
+        [
+          (rootPath + "/system/core.nix")
+          (rootPath + "/hardware/${hardwareModule}.nix")
+          (rootPath + "/profiles/${profile}.nix")
 
-let
-  mkHost = { username
-           , hostname
-           , system ? "x86_64-linux"
-           , profile
-           , hardwareModule
-           , userModules ? [ ]
-           , extraModules ? [ ]
-           }:
+          ## Home-Manager as a NixOS module
+          home-manager.nixosModules.home-manager
 
-    let
-      uname = canonicalize username;
-      hname = canonicalize hostname;
-      profileName = canonicalize profile;
-      hwName = canonicalize hardwareModule;
+          {
+            networking.hostName = hostname;
 
-    in {
-      ${uname} = lib.nixosSystem {
-        inherit system;
-
-        modules =
-          [
-            ../system/core.nix
-            ../hardware/${hwName}.nix
-            ../profiles/${profileName}.nix
-            ../desktop/default.nix
-            {
-              networking.hostName = hname;
-            }
-          ]
-          ++ userModules    # e.g. users/oskodiak.nix
-          ++ extraModules;  # for advanced overrides
-
-      };
+            home-manager.useGlobalPkgs       = true;
+            home-manager.useUserPackages     = true;
+            home-manager.backupFileExtension = "backup";
+          }
+        ]
+        ++ userModules    # e.g. ./users/oskodiak.nix
+        ++ extraModules;  # for overrides if we ever need them
     };
-
 in
 {
   inherit mkHost;
