@@ -39,10 +39,6 @@
   ##  QEMU/Spice Guest Integration (virt-manager best support)
   services.qemuGuest.enable = true;
   services.spice-vdagentd.enable = true;
-  # Clipboard + mouse sync in Spice
-  services.spice-vdagentd.settings = {
-    capabilities = [ "clipboard" "mouse" ];
-  };
   ##  VirtualBox Disabled (we don't target it)
   virtualisation.virtualbox.guest = {
     enable = lib.mkForce false;
