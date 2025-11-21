@@ -1,41 +1,39 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports = [ 
-    (modulesPath + "/installer/scan/not-detected.nix")
-  ];
-
   # Intel hardware support
   hardware = {
     enableAllFirmware = true;
     enableRedistributableFirmware = true;
     cpu.intel.updateMicrocode = true;
+
     graphics = {
       enable = true;
       enable32Bit = true;
     };
   };
 
-  # Intel graphics drivers
+  # Intel graphics driver (modesetting is usually best on Wayland)
   services.xserver.videoDrivers = [ "modesetting" ];
-  
+
   # Intel power management
   powerManagement = {
     enable = true;
     cpuFreqGovernor = "powersave";
   };
-  
-  # Intel kernel modules and optimizations
+
+  # Intel kernel modules and tunables
   boot = {
-    initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
+    initrd.availableKernelModules = [
+      "xhci_pci" "ehci_pci" "ahci"
+      "usbhid" "usb_storage" "sd_mod"
+    ];
+
     kernelModules = [ "kvm-intel" ];
+
     kernelParams = [
-      "i915.enable_fbc=1"    # Frame buffer compression
-      "i915.enable_psr=1"    # Panel self refresh
+      "i915.enable_fbc=1"    # frame buffer compression
+      "i915.enable_psr=1"    # panel self refresh
     ];
   };
-
-  # Default filesystem and network configuration
-  swapDevices = lib.mkDefault [ ];
-  networking.useDHCP = lib.mkDefault true;
 }
