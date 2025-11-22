@@ -5,17 +5,14 @@
   ##  DISPLAY SERVER + SDDM   ##
   ##############################
 
-  services.xserver = {
+  # Do NOT enable xserver — SwayFX is Wayland-native.
+  services.displayManager.sddm = {
     enable = true;
-
-    displayManager.sddm = {
-      enable = true;
-      wayland.enable = true;
-      autoNumlock = true;
-    };
+    wayland.enable = true;
+    autoNumlock = true;
   };
 
-  # Tell NixOS which session SDDM should start
+  # Tell SDDM which session to start
   services.displayManager.defaultSession = "sway";
 
   ##############################
