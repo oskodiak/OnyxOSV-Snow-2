@@ -35,7 +35,7 @@
       }
     ];
 
-    initExtra = ''
+    initContent = ''
       # Key bindings
       bindkey "\eh" backward-word
       bindkey "\ej" down-line-or-history
