@@ -2,9 +2,14 @@
 
 {
   ##  VM Hardware Profile (QEMU/KVM / virt-manager)
+  ##  Imports hardware configuration if it exists, otherwise provides minimal VM config
+
+  imports = lib.optionals (builtins.pathExists /etc/nixos/hardware-configuration.nix) [
+    /etc/nixos/hardware-configuration.nix
+  ];
 
   boot = {
-    # Initrd modules required for virtual machine storage and boot
+    # Additional initrd modules for virtual machine storage and boot
     initrd.availableKernelModules = [
       "ahci"
       "xhci_pci"
@@ -16,25 +21,25 @@
     # Runtime kernel modules for virtualization
     kernelModules = [
       "kvm-intel"
-      # Add "kvm-amd" automatically depending on CPU?
-      # Users can override if needed.
+      "kvm-amd"  # Support both Intel and AMD
     ];
   };
 
-  ##  File Systems (required for vm-only testing)
-  ##  These values match a standard NixOS installer layout.
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
+  # Fallback filesystem configuration when hardware-configuration.nix doesn't exist
+  # This will be overridden by hardware-configuration.nix when it exists
+  fileSystems = lib.mkDefault {
+    "/" = {
+      device = "/dev/disk/by-label/nixos";
+      fsType = "ext4";
+    };
+    "/boot" = {
+      device = "/dev/disk/by-label/boot";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
   };
 
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
-    fsType  = "vfat";
-  };
-
-  swapDevices = [ ];
+  swapDevices = lib.mkDefault [ ];
 
   ##  QEMU/Spice Guest Integration (virt-manager best support)
   services.qemuGuest.enable = true;

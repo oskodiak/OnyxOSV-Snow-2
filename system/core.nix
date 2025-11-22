@@ -40,9 +40,16 @@
   };
 
   #### Audio / Services ####
-  hardware.pulseaudio.enable = lib.mkForce false;
 
   services = {
+    # Essential desktop services
+    libinput.enable = true;                    # Input handling (mouse/touchpad)
+    gvfs.enable = true;                        # File manager mounting
+    gnome.gnome-keyring.enable = true;         # Password/credential management
+    blueman.enable = true;                     # Bluetooth GUI management
+    tumbler.enable = true;                     # Image thumbnails
+    fstrim.enable = true;                      # SSD optimization
+    
     openssh = {
       enable = true;
       settings = {
@@ -86,10 +93,23 @@
         }
       });
     '';
+
+    # Enable swaylock authentication
+    pam.services.swaylock = {
+      text = "auth include login";
+    };
   };
 
   #### Shell ####
   programs.zsh.enable = true;
+
+  #### Hardware ####
+  hardware = {
+    graphics.enable = true;                    # GPU acceleration
+    bluetooth.enable = true;                   # Bluetooth support
+    bluetooth.powerOnBoot = true;              # Auto-start Bluetooth
+    enableRedistributableFirmware = true;     # Non-free firmware
+  };
 
   #### Home-Manager ####
   home-manager = {

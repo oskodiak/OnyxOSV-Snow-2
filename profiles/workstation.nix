@@ -1,19 +1,26 @@
 { config, pkgs, lib, ... }:
 
 {
-  imports = [
-    ../packages
-  ];
+  ##############################
+  ##  DISPLAY SERVER + SDDM   ##
+  ##############################
 
-  #### Display manager / session ####
-
-  services.displayManager.sddm = {
+  services.xserver = {
     enable = true;
-    wayland.enable = true;
-    autoNumlock = true;
+
+    displayManager.sddm = {
+      enable = true;
+      wayland.enable = true;
+      autoNumlock = true;
+    };
   };
 
+  # Tell NixOS which session SDDM should start
   services.displayManager.defaultSession = "sway";
+
+  ##############################
+  ##        SWAYFX WM         ##
+  ##############################
 
   programs.sway = {
     enable = true;
@@ -21,14 +28,14 @@
     wrapperFeatures.gtk = true;
   };
 
-  #### Cursors / environment ####
-
   environment.variables = {
     XCURSOR_THEME = "Adwaita";
     XCURSOR_SIZE  = "24";
   };
 
-  #### Desktop applications ####
+  ##############################
+  ##    DESKTOP PACKAGES      ##
+  ##############################
 
   environment.systemPackages = with pkgs; [
     ghostty
@@ -37,12 +44,14 @@
     brightnessctl
     networkmanagerapplet
 
-    # Themes / icons
+    # GTK themes / icons
     adwaita-icon-theme
     gnome-themes-extra
   ];
 
-  #### Fonts ####
+  ##############################
+  ##          FONTS           ##
+  ##############################
 
   fonts = {
     packages = with pkgs; [
@@ -62,7 +71,9 @@
     };
   };
 
-  #### Portals ####
+  ##############################
+  ##         PORTALS          ##
+  ##############################
 
   xdg.portal = {
     enable = true;
@@ -73,7 +84,9 @@
     ];
   };
 
-  #### Printing / network discovery ####
+  ##############################
+  ##     PRINT / NETWORK      ##
+  ##############################
 
   services.printing.enable = true;
 

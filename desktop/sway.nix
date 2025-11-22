@@ -6,7 +6,10 @@
 {
   wayland.windowManager.sway = {
     enable = true;
-    systemd.enable = true;
+    systemd = {
+      enable = true;
+      variables = [ "--all" ];
+    };
     package = pkgs.swayfx;
     checkConfig = false;
     

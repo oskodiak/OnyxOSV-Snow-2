@@ -4,7 +4,10 @@ let
   username = "oskodiak";
 in
 {
-  ## System user account
+  ##############################
+  ##     SYSTEM USER           ##
+  ##############################
+
   users.users.${username} = {
     isNormalUser = true;
     description  = "Kodiak";
@@ -12,15 +15,18 @@ in
     shell        = pkgs.zsh;
 
     extraGroups = [
-      "wheel"          # sudo
-      "networkmanager" # networking
+      "wheel"
+      "networkmanager"
       "audio"
       "video"
-      "docker"         # optional
+      "docker"
     ];
   };
 
-  ## Home-Manager user configuration
+  ##############################
+  ##     HOME MANAGER         ##
+  ##############################
+
   home-manager.users.${username} = { pkgs, ... }: {
     home.username      = username;
     home.homeDirectory = "/home/${username}";
@@ -32,10 +38,12 @@ in
 
     programs.git = {
       enable    = true;
-      userName  = "oskodiak";
-      userEmail = "oskodiak@proton.me";
+      settings = {
+        user = {
+          name = "oskodiak";
+          email = "oskodiak@proton.me";
+        };
+      };  
     };
-
-    ## (user packages later)
   };
 }
